@@ -7,7 +7,6 @@ function buildLine(ds) {
         const margin = { top: 20, right: 20, bottom: 30, left: 100 };
         const graphWidth = width - margin.left - margin.right;
         const graphHeight = height - margin.top - margin.bottom;
-        console.log(width);
 
         const xScale = d3.scaleTime()
             .domain(d3.extent(ds, d => d[0]))
@@ -22,7 +21,7 @@ function buildLine(ds) {
             .x(d => xScale(d[0]))
             .y(d => yScale(d[1]));
 
-        const svg = d3.select("body")
+        const svg = d3.select(selection)
             .append("svg")
             .attr("width", width)
             .attr("height", height)
@@ -47,7 +46,8 @@ function buildLine(ds) {
             .attr("stroke-width", 1.5)
             .attr("d", lineFun);
 
-        const tooltip = d3.select("body")
+        //const tooltip = d3.select("body")
+        const tooltip = d3.select(selection)
             .append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
@@ -75,17 +75,18 @@ function buildLine(ds) {
             .on("mouseout", mouseout);
     }
 
-    // This is not working
-    chart.width = function (value) {
+    // Accesor
+    chart.width = function(value) {
         if (!arguments.length) { return width; }
         width = value;
         return chart;
-    }
-    chart.height = function (value) {
+    };
+    
+    chart.height = function(value) {
         if (!arguments.length) { return height; }
         height = value;
         return chart;
-    }
+    };    
 
-    return chart();
+    return chart;
 }
