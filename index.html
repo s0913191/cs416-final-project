@@ -37,14 +37,9 @@
     Promise.all([dataPromise1, dataPromise2]).then(function (data) {
       var data1 = data[0]; //medium_january.csv
       var data2 = data[1]; //AnnualArrivals.csv
-      console.log(data1)
-
-
-
 
       var arrivalsByYear = d3.rollup(data2.filter(d => (!excludedCountry.includes(d.Country))), v => d3.sum(v, d => d.Value), d => d.Year);
       arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
-      console.log(data2);
 
       //var chartContainer = d3.select("#line_chart").append("svg");
       //chartContainer.append("text").attr("x", 10).attr("y", 20).text("Global Total");

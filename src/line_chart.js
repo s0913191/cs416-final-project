@@ -1,5 +1,7 @@
 function buildLine(ds) {
     // ds is going to be an array d[N][2]
+
+    // Default parameters
     var width = 800;
     var height = 500;
 
