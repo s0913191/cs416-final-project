@@ -3,21 +3,19 @@ function buildBubble() {
     var width = 800;
     var height = 500;
     function chart(selection) {
-		var data = selection.datum();
-        console.log(data);
+        var data = selection.datum();
+        //console.log(data);
 
-
-		//chartSelection=selection;
-		var div = selection,
-		svg = div.selectAll('svg');
-		svg.attr('width', width).attr('height', height);
-		chartSVG=svg;
+        //chartSelection=selection;
+        var div = selection,
+            svg = div.selectAll('svg');
+        svg.attr('width', width).attr('height', height);
+        chartSVG = svg;
 
         var scaleRadius = d3.scaleLinear()
-            .domain([d3.min(data, function (d) { return +d.views; }),
-            d3.max(data, function (d) { return +d.views; })])
-            .range([5, 30]);
-        
+            .domain([d3.min(data, function (d) { return +d.views; }), d3.max(data, function (d) { return +d.views; })])
+            .range([5, 18]);
+
         var colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
 
         var node = svg.selectAll("circle")
@@ -25,19 +23,22 @@ function buildBubble() {
             .enter()
             .append("circle")
             .attr("r", function (d) { return scaleRadius(d.views) })
-            .style("fill", function(d) { return colorCircles(d.category)})
+            .style("fill", function (d) { return colorCircles(d.category) })
             .attr('transform', 'translate(' + [width / 2, height / 2] + ')');
 
 
         var simulation = d3.forceSimulation(data)
-            .force("charge", d3.forceManyBody().strength([-50]))
-            .force("x", d3.forceX())
-            .force("y", d3.forceY())
+            .force("charge", d3.forceManyBody().strength(-10))
+            .force("x", d3.forceX().x(width / 2).strength(0.05))
+            .force("y", d3.forceY().y(height / 2).strength(0.05))
             .on("tick", ticked);
 
         function ticked(e) {
-            node.attr("cx", function (d) { return d.x })
-                .attr("cy", function (d) { return d.y });
+            //node.attr("cx", function (d) { return d.x + width / 2 }).attr("cy", function (d) { return d.y + height / 2 });
+            node.attr("transform", function (d) {
+                //return "translate(" + [d.x + (width / 2), d.y + (height / 2)] + ")";
+                return "translate(" + [d.x, d.y] + ")";
+            });
         }
 
     }
