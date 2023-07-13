@@ -10,61 +10,63 @@
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="src/line_chart.js"></script>
-  <script src="src/line_mini_charts.js"></script>
+  <script src="src/bubble_chart.js"></script>
+  <!--script src="src/line_mini_charts.js"></script-->
 
   <link rel="stylesheet" href="css/line_chart.css">
 
 </head>
 
-<body onload='init()'>
-
+<body>
+  <div id="my_dataviz"></div>
+  <div class="chart-example" id="chart"><svg></svg></div>
+  <div id="line_chart"></div>
   <h3>D3 Chart</h3>
   <script>
-    async function init() {
-      // Exclude Canada and Mexico because they are accounted for as 'air only'
-      const excludedCountry = ['Canada', 'Mexico'];
-      const topCountry = ['Canada (air only)', 'United Kingdom', 'Japan', 'China', 'Mexico (air only)', 'South Korea', 'Brazil', 'Germany', 'France', 'India'];
-      const topRegion = ['North America', 'Asia', 'Eastern Europe', 'Africa', 'Western Europe', 'Caribbean', 'South America', 'Oceania', 'Middle East', 'Central America'];
-      var data = await d3.csv("AnnualArrivals.csv");
+
+    // Exclude Canada and Mexico because they are accounted for as 'air only'
+    const excludedCountry = ['Canada', 'Mexico'];
+    const topCountry = ['Canada (air only)', 'United Kingdom', 'Japan', 'China', 'Mexico (air only)', 'South Korea', 'Brazil', 'Germany', 'France', 'India'];
+    const topRegion = ['North America', 'Asia', 'Eastern Europe', 'Africa', 'Western Europe', 'Caribbean', 'South America', 'Oceania', 'Middle East', 'Central America'];
+
+    
+
+
+
+    d3.csv("medium_january.csv").then(function (data) {
+      var chart = buildBubble().width(600).height(400);
+      d3.select('#chart').datum(data).call(chart);
+
+    });
+
+    d3.csv("AnnualArrivals.csv").then(function (data) {
       var arrivalsByYear = d3.rollup(data.filter(d => (!excludedCountry.includes(d.Country))), v => d3.sum(v, d => d.Value), d => d.Year);
       arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
 
-      document.write('<h3>Global Total</h3>')
-      //var lineChart = buildLine(arrayArrivalsByYear).width(500).height(300);
-      //lineChart("body");
-      buildLine(arrayArrivalsByYear)("body");
+      //var chartContainer = d3.select("#line_chart").append("svg");
+      //chartContainer.append("text").attr("x", 10).attr("y", 20).text("Global Total");
+      buildLine(arrayArrivalsByYear)("#line_chart");
+      //chartContainer.call(chart1);
 
       // By country
       topCountry.forEach(function (e, i) {
-        document.write(`<h3>${e}</h3>`)
+        document.body.innerHTML += `<h3>${e}</h3>`;
         arrivalsByYear = d3.rollup(data.filter(d => (d.Country == e)), v => d3.sum(v, d => d.Value), d => d.Year);
         arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
-        //buildLine(arrayArrivalsByYear);
-
-        d3.select("#small-multiples")
-          .selectAll('div')
-          .data(arrayArrivalsByYear)
-          .enter()
-          .append('div')
-          .call(buildLine)
-        //buildLine(arrayArrivalsByYear).width(500).height(300)("body");
+        buildLine(arrayArrivalsByYear).width(400).height(200)("#line_chart");
       });
-
 
       // By region
       topRegion.forEach(function (e, i) {
-        document.write(`<h3>${e}</h3>`)
+        document.body.innerHTML += `<h3>${e}</h3>`;
         arrivalsByYear = d3.rollup(data.filter(d => (!excludedCountry.includes(d.Country) && d.Region == e)), v => d3.sum(v, d => d.Value), d => d.Year);
         arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
-        //buildLine(arrayArrivalsByYear);
-        buildLine(arrayArrivalsByYear).width(500).height(300)("body");
+        buildLine(arrayArrivalsByYear).width(500).height(300)("#line_chart");
       });
-    }
+
+    });
+
   </script>
-  <div id="my_dataviz"></div>
-
-
-
 </body>
 
 </html>
