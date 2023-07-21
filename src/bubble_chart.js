@@ -4,9 +4,14 @@ function buildBubble() {
     // Default parameters
     var width = 800;
     var height = 500;
+    var minRadius = 6;
+    var maxRadius = 20;
     var columnForColors = "category";
     var columnForTitle = "title";
     var columnForRadius = "views";
+    var forceApart = -50;
+    var framesToSimulate = 10;
+    var showTitleOnCircle = false;
 
     function chart(selection) {
         var data = selection.datum();
@@ -17,7 +22,7 @@ function buildBubble() {
 
         var scaleRadius = d3.scaleLinear()
             .domain([d3.min(data, function (d) { return +d[columnForRadius]; }), d3.max(data, function (d) { return +d[columnForRadius]; })])
-            .range([5, 18]);
+            .range([minRadius, maxRadius]);
 
         var colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -31,12 +36,13 @@ function buildBubble() {
 
 
         var simulation = d3.forceSimulation(data)
-            .force("charge", d3.forceManyBody().strength(-30))
-            .force("x", d3.forceX().x(width / 2).strength(0.05))
-            .force("y", d3.forceY().y(height / 2).strength(0.05))
+            .force("charge", d3.forceManyBody().strength(forceApart))
+            .force("x", d3.forceX().x(width / 2).strength(0.3))
+            .force("y", d3.forceY().y(height / 2).strength(0.3))
             //.force("cluster", forceCluster())
             //.force("collide", forceCollide())
             //.force("collision", d3.forceCollide().radius(function(d) {return d[columnForRadius]-100}))
+            .tick(framesToSimulate)
             .on("tick", ticked);
 
         function ticked(e) {
@@ -46,6 +52,7 @@ function buildBubble() {
         }
 
     }
+
 
     // Accesor
     chart.width = function (value) {
@@ -75,6 +82,30 @@ function buildBubble() {
     chart.columnForRadius = function (value) {
         if (!arguments.length) { return columnForRadius; }
         columnForRadius = value;
+        return chart;
+    };
+
+    chart.forceApart = function (value) {
+        if (!arguments.length) { return forceApart; }
+        forceApart = value;
+        return chart;
+    };
+
+    chart.maxRadius = function (value) {
+        if (!arguments.length) { return maxRadius; }
+        maxRadius = value;
+        return chart;
+    };
+
+    chart.minRadius = function (value) {
+        if (!arguments.length) { return minRadius; }
+        minRadius = value;
+        return chart;
+    };
+
+    chart.framesToSimulate = function (value) {
+        if (!arguments.length) { return framesToSimulate; }
+        framesToSimulate = value;
         return chart;
     };
 
