@@ -21,7 +21,7 @@
 <body>
   <h1>test</h1>
   <div id="my_dataviz"></div>
-  <div class="chart-example" id="chart" style="position: relative;"><svg></svg></div>
+  <div class="chart-example" id="chart" style="position: relative;"></div>
   <div id="line_chart_overall"></div>
   <div id="line_chart_country"></div>
   <div id="line_chart_region"></div>
@@ -42,31 +42,45 @@
       var data1 = data[0]; //medium_january.csv
       var data2 = data[1]; //AnnualArrivals.csv
 
-      var arrivalsByYear = d3.rollup(data2.filter(d => (!excludedCountry.includes(d.Country))), v => d3.sum(v, d => d.Value), d => d.Year);
-      arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
+      var arrivalsByYear = d3.rollup(
+        data2.filter(d => (!excludedCountry.includes(d.Country))),
+        v => d3.sum(v, d => d.Value),
+        d => d.Year
+      );
+      //arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
+      var arrayArrivalsByYear = Array.from(arrivalsByYear.entries()).map(([year, value]) => ({
+        year: year,
+        travelers: value
+      }));
 
-      buildLine(arrayArrivalsByYear).xAxisLabel("Year").yAxisLabel("Travelers")("#line_chart_overall");
-    
+      var chart = buildLine().xAxisLabel("Year").yAxisLabel("Travelers");
+      d3.select("#line_chart_overall").datum(arrayArrivalsByYear).call(chart);
+      //buildLine(d3.select("#line_chart_overall"))(arrayArrivalsByYear);
+
+      //buildLine(arrayArrivalsByYear).xAxisLabel("Year").yAxisLabel("Travelers")("#line_chart_overall");
+
 
       // By country
       topCountry.forEach(function (e, i) {
-        //document.body.innerHTML += `<h3>${e}</h3>`;
         arrivalsByYear = d3.rollup(data2.filter(d => (d.Country == e)), v => d3.sum(v, d => d.Value), d => d.Year);
-        arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
-        buildLine(arrayArrivalsByYear).width(300).height(150).showDots(false).chartTitle(e).xShowAxisLabel(false).yShowAxisLabel(false)("#line_chart_country");
+        arrayArrivalsByYear = Array.from(arrivalsByYear.entries()).map(([year, value]) => ({
+        year: year,
+        travelers: value
+      }));
+
+        var chart = buildLine().width(300).height(150).showDots(false).chartTitle(e).xShowAxisLabel(false).yShowAxisLabel(false);
+        d3.select("#line_chart_country").datum(arrayArrivalsByYear).call(chart);
       });
 
       // By region
       topRegion.forEach(function (e, i) {
-        //document.body.innerHTML += `<h3>${e}</h3>`;
         arrivalsByYear = d3.rollup(data2.filter(d => (!excludedCountry.includes(d.Country) && d.Region == e)), v => d3.sum(v, d => d.Value), d => d.Year);
         arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
-        buildLine(arrayArrivalsByYear).width(500).height(300).showDots(false).chartTitle(e)("#line_chart_region");
+        //buildLine(arrayArrivalsByYear).width(500).height(300).showDots(false).chartTitle(e)("#line_chart_region");
       });
 
 
-      var chart = buildBubble(data1).width(600).height(400);
-      //var chart = buildBubble();
+      var chart = buildBubble().width(600).height(400);
       d3.select('#chart').datum(data1).call(chart);
 
     });

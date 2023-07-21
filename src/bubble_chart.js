@@ -16,8 +16,10 @@ function buildBubble() {
     function chart(selection) {
         var data = selection.datum();
 
+        //console.log(data);
+
         var div = selection,
-            svg = div.selectAll('svg');
+            svg = div.append('svg');
         svg.attr('width', width).attr('height', height);
 
         var scaleRadius = d3.scaleLinear()

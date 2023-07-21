@@ -1,9 +1,11 @@
-function buildLine(ds) {
+function buildLine() {
     // ds is going to be an array d[N][2]
 
     // Default parameters
     var width = 800;
     var height = 500;
+    var columnForX = "year";
+    var columnForY = "travelers";
     var lineColor = "steelblue";
     var dotsColor = "steelblue";
     var showDots = true;
@@ -17,15 +19,17 @@ function buildLine(ds) {
     var showChartTitle = true;
 
     function chart(selection) {
+        var data = selection.datum();
+
         const margin = { top: 20, right: 20, bottom: 30, left: 100 };
         const graphWidth = width - margin.left - margin.right;
         const graphHeight = height - margin.top - margin.bottom;
 
         const xScale = d3.scaleTime()
-            .domain(d3.extent(ds, d => d[0]))
+            .domain([d3.min(data, function (d) { return +d[columnForX]; }),d3.max(data, function (d) { return +d[columnForX]; })])
             .range([0, graphWidth]);
         const yScale = d3.scaleLinear()
-            .domain([0, d3.max(ds, d => d[1])])
+            .domain([0, d3.max(data, function (d) { return +d[columnForY]; })])
             .range([graphHeight, 0]);
 
         const xAxisGen = d3.axisBottom(xScale)
@@ -34,13 +38,12 @@ function buildLine(ds) {
         const yAxisGen = d3.axisLeft(yScale)
             .ticks(yAxisTicks);
         const lineFun = d3.line()
-            .x(d => xScale(d[0]))
-            .y(d => yScale(d[1]));
+            .x(d => xScale(d[columnForX]))
+            .y(d => yScale(d[columnForY]));
 
-        const svg = d3.select(selection)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+        var div = selection,
+            svg = div.append('svg');
+        svg.attr('width', width).attr('height', height);
         //.attr("id", "svg-overview");
 
         const graph = svg.append("g")
@@ -56,21 +59,20 @@ function buildLine(ds) {
             .attr("class", "y-axis");
 
         graph.append("path")
-            .datum(ds)
+            .datum(data)
             .attr("fill", "none")
             .attr("stroke", lineColor)
             .attr("stroke-width", 1.5)
             .attr("d", lineFun);
 
         //const tooltip = d3.select("body")
-        const tooltip = d3.select(selection)
-            .append("div")
+        const tooltip = svg.append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
         const mouseover = (event, d) => {
             tooltip.style("opacity", 1);
-            tooltip.html("Year: " + d[0] + "<br>Value: " + d[1])
+            tooltip.html("Year: " + d[columnForX] + "<br>Value: " + d[columnForY])
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
         };
@@ -81,11 +83,11 @@ function buildLine(ds) {
 
         if (showDots) {
             graph.selectAll("circle")
-                .data(ds)
+                .data(data)
                 .enter()
                 .append("circle")
-                .attr("cx", d => xScale(d[0]))
-                .attr("cy", d => yScale(d[1]))
+                .attr("cx", d => xScale(d[columnForX]))
+                .attr("cy", d => yScale(d[columnForY]))
                 .attr("r", 4)
                 .attr("fill", dotsColor)
                 .on("mouseover", mouseover)
