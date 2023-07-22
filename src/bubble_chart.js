@@ -11,39 +11,85 @@ function buildBubble() {
     var columnForRadius = "views";
     var forceApart = -50;
     var framesToSimulate = 10;
-    var showTitleOnCircle = false;
+    var showTitleOnCircle = true;
 
     function chart(selection) {
         var data = selection.datum();
-
-        //console.log(data);
-
-        var div = selection,
+        var div = selection;
+        var svg = div.select('svg');
+        if (svg.empty()) {
             svg = div.append('svg');
-        svg.attr('width', width).attr('height', height);
+            svg.attr('width', width)
+                .attr('height', height);
 
+        } else {
+            svg.selectAll("*").remove();
+        }
+
+
+        // Tooltip configurations
+        const tooltip = div.append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("visibility", "hidden")
+            .style("color", "white")
+            .style("padding", "8px")
+            .style("background-color", "#626D71")
+            .style("border-radius", "6px")
+            .style("text-align", "center")
+            .style("font-family", "monospace")
+            .style("width", "400px")
+            .style("font-size", "12px")
+            .style("stroke", "transparent")
+            .text("");
+
+        // Mouse event functions for tooltip
+        const mouseover = (event, d) => {
+            tooltip.html(d[columnForTitle] + "<br/>" + d[columnForColors] + "<br/>" + numberWithCommas(d[columnForRadius]));
+            return tooltip.style("visibility", "visible");
+        };
+
+        const mousemove = (event, d) => {
+            const [x, y] = d3.pointer(event, svg.node());
+            return tooltip.style("top", (y + 0) + "px").style("left", (x + 100) + "px");
+            //return tooltip.style("y", (y + 0) + "px").style("x", (x + 100) + "px");
+            //return tooltip.style("left", (d3.mouse(this)[0]+70) + "px").style("top", (d3.mouse(this)[1]) + "px")
+        };
+
+        const mouseout = (event, d) => {
+            return tooltip.style("visibility", "hidden");
+        };
+
+        // Scaler functions
         var scaleRadius = d3.scaleLinear()
             .domain([d3.min(data, function (d) { return +d[columnForRadius]; }), d3.max(data, function (d) { return +d[columnForRadius]; })])
             .range([minRadius, maxRadius]);
 
         var colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
 
+        // Nodes (create dots)
         var node = svg.selectAll("circle")
             .data(data)
             .enter()
             .append("circle")
             .attr("r", function (d) { return scaleRadius(d[columnForRadius]) })
             .style("fill", function (d) { return colorCircles(d[columnForColors]) })
-            .attr('transform', 'translate(' + [width / 2, height / 2] + ')');
+            .attr('transform', 'translate(' + [width / 2, height / 2] + ')')
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseout", mouseout);
 
+        node.append("clipPath")
+            .attr("id", function (d, i) { return "clip-" + i; })
+            .append("use")
+            .attr("xlink:href", function (d, i) { return "#" + i; });
 
+        // Add force simulations
         var simulation = d3.forceSimulation(data)
             .force("charge", d3.forceManyBody().strength(forceApart))
-            .force("x", d3.forceX().x(width / 2).strength(0.3))
-            .force("y", d3.forceY().y(height / 2).strength(0.3))
-            //.force("cluster", forceCluster())
-            //.force("collide", forceCollide())
-            //.force("collision", d3.forceCollide().radius(function(d) {return d[columnForRadius]-100}))
+            .force("x", d3.forceX().x(width / 2).strength(0.5))
+            .force("y", d3.forceY().y(height / 2).strength(0.5))
+            .force("collide", d3.forceCollide().radius(function (d) { return scaleRadius(d[columnForRadius]) + 2; }))
             .tick(framesToSimulate)
             .on("tick", ticked);
 
@@ -53,6 +99,22 @@ function buildBubble() {
             });
         }
 
+        if (showTitleOnCircle) {
+            var textGroup = node.append("g")
+                .attr("clip-path", function (d, i) {
+                    return "url(#clip-" + i + ")";
+                });
+
+            textGroup.append("text")
+                .attr("text-anchor", "middle")
+                .style("pointer-events", "none")
+                .attr("dy", ".35em")
+                //.attr('transform', function(d){return 'translate(' + [d.x,d.y] + ')'})
+                .text(function (d) { return d[columnForTitle]; })
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)
+                .on("mouseout", mouseout);
+        }
     }
 
 

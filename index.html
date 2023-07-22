@@ -10,10 +10,9 @@
   <meta name="author" content="Kazuhei Sasaki">
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="src/util.js"></script>
   <script src="src/line_chart.js"></script>
   <script src="src/bubble_chart.js"></script>
-  <!--script src="src/line_mini_charts.js"></script-->
-
   <link rel="stylesheet" href="css/line_chart.css">
 
 </head>
@@ -22,15 +21,23 @@
   <h1>test</h1>
   <div id="my_dataviz"></div>
   <div class="chart-example" id="chart" style="position: relative;"></div>
-  <div id="line_chart_overall"></div>
-  <div id="line_chart_country"></div>
+  <div id="line_chart_overall">
+    <h1>Overview</h1>
+  </div>
+  <div id="bubble_chart_overall">
+    <label for="yearSlider">Select Year:</label>
+    <input type="range" min="2000" max="2022" step="1" value="2000" id="yearSlider" />
+    <span id="selectedYear">2000</span>
+  </div>
+  <div id="line_chart_country">
+    <h1>By Country</h1>
+  </div>
   <div id="line_chart_region"></div>
-  <h3>D3 Chart</h3>
   <script>
 
     // Exclude Canada and Mexico because they are accounted for as 'air only'
     const excludedCountry = ['Canada', 'Mexico'];
-    const topCountry = ['Canada (air only)', 'United Kingdom', 'Japan', 'China', 'Mexico (air only)', 'South Korea', 'Brazil', 'Germany', 'France', 'India'];
+    const topCountry = ['Canada (air only)', 'United Kingdom', 'Japan', 'China', 'Mexico (air only)', 'South Korea', 'Brazil', 'Germany', 'France', 'India', 'Australia', 'Italy', 'Colombia', 'Spain', 'Argentina', 'Netherlands', 'Ireland', 'Taiwan', 'Dominican Republic', 'Switzerland'];
     const topRegion = ['North America', 'Asia', 'Eastern Europe', 'Africa', 'Western Europe', 'Caribbean', 'South America', 'Oceania', 'Middle East', 'Central America'];
 
     // Create promises to load data
@@ -41,6 +48,41 @@
     Promise.all([dataPromise1, dataPromise2]).then(function (data) {
       var data1 = data[0]; //medium_january.csv
       var data2 = data[1]; //AnnualArrivals.csv
+
+
+      function updateBubbleChart(selectedYear) {
+        selectedYear = parseInt(selectedYear);
+        var bubbleChartSvg = d3.select('#bubble_chart_overall');
+        // Update the chart
+        var filteredData = data2.filter(d => (!excludedCountry.includes(d.Country) && parseInt(d.Year) == selectedYear));
+        var chart = buildBubble()
+          .width(600)
+          .height(400)
+          .minRadius(5)
+          .maxRadius(50)
+          .columnForColors("Region")
+          .columnForTitle("Country")
+          .columnForRadius("Value");
+        bubbleChartSvg.datum(filteredData).call(chart);
+      }
+
+      // スライドバーのDOM要素を取得
+      var yearSlider = document.getElementById("yearSlider");
+      var selectedYearText = document.getElementById("selectedYear");
+
+      // スライドバーの値が変更されたときのイベントハンドラ
+      yearSlider.addEventListener("input", function () {
+        // スライドバーの値を取得
+        var selectedYear = +yearSlider.value;
+        // 選択された年を表示
+        selectedYearText.textContent = selectedYear;
+        updateBubbleChart(selectedYear);
+      });
+
+
+
+      var arrivalsByYearRegionCountry = data2.filter(d => (!excludedCountry.includes(d.Country) && d.Year == '2000'));
+      //console.log(arrivalsByYearRegionCountry)
 
       var arrivalsByYear = d3.rollup(
         data2.filter(d => (!excludedCountry.includes(d.Country))),
@@ -62,11 +104,15 @@
 
       // By country
       topCountry.forEach(function (e, i) {
-        arrivalsByYear = d3.rollup(data2.filter(d => (d.Country == e)), v => d3.sum(v, d => d.Value), d => d.Year);
+        arrivalsByYear = d3.rollup(
+          data2.filter(d => (d.Country == e)),
+          v => d3.sum(v, d => d.Value),
+          d => d.Year
+        );
         arrayArrivalsByYear = Array.from(arrivalsByYear.entries()).map(([year, value]) => ({
-        year: year,
-        travelers: value
-      }));
+          year: year,
+          travelers: value
+        }));
 
         var chart = buildLine().width(300).height(150).showDots(false).chartTitle(e).xShowAxisLabel(false).yShowAxisLabel(false);
         d3.select("#line_chart_country").datum(arrayArrivalsByYear).call(chart);
@@ -80,8 +126,11 @@
       });
 
 
-      var chart = buildBubble().width(600).height(400);
-      d3.select('#chart').datum(data1).call(chart);
+      //var chart = buildBubble().width(600).height(400);
+      //d3.select('#chart').datum(data1).call(chart);
+
+      //var chart = buildBubble().width(600).height(400).minRadius(5).maxRadius(50).columnForColors("Region").columnForTitle("Country").columnForRadius("Value");
+      //var bubbleChartSvg = d3.select('#bubble_chart_overall').datum(arrivalsByYearRegionCountry).call(chart);
 
     });
 
