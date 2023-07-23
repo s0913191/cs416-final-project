@@ -23,7 +23,8 @@ function buildBubble() {
                 .attr('height', height);
 
         } else {
-            svg.selectAll("*").remove();
+            svg.selectAll("*")
+                .remove();
         }
 
 
@@ -38,7 +39,7 @@ function buildBubble() {
             .style("border-radius", "6px")
             .style("text-align", "center")
             .style("font-family", "monospace")
-            .style("width", "400px")
+            //.style("width", "400px")
             .style("font-size", "12px")
             .style("stroke", "transparent")
             .text("");
@@ -50,7 +51,9 @@ function buildBubble() {
         };
 
         const mousemove = (event, d) => {
-            const [x, y] = d3.pointer(event, svg.node());
+            const [x, y] = d3.pointer(event, document.body);
+            console.log(svg.node());
+            console.log(x, y);
             return tooltip.style("top", (y + 0) + "px").style("left", (x + 100) + "px");
             //return tooltip.style("y", (y + 0) + "px").style("x", (x + 100) + "px");
             //return tooltip.style("left", (d3.mouse(this)[0]+70) + "px").style("top", (d3.mouse(this)[1]) + "px")
@@ -65,7 +68,7 @@ function buildBubble() {
             .domain([d3.min(data, function (d) { return +d[columnForRadius]; }), d3.max(data, function (d) { return +d[columnForRadius]; })])
             .range([minRadius, maxRadius]);
 
-        var colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
+        var colorCircles = d3.scaleOrdinal(d3.schemePaired);
 
         // Nodes (create dots)
         var node = svg.selectAll("circle")

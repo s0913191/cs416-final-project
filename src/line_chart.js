@@ -20,13 +20,45 @@ function buildLine() {
 
     function chart(selection) {
         var data = selection.datum();
+        var div = selection;
+        var svg = div.append('svg');
+        svg.attr('width', width).attr('height', height);
 
         const margin = { top: 20, right: 20, bottom: 30, left: 100 };
         const graphWidth = width - margin.left - margin.right;
         const graphHeight = height - margin.top - margin.bottom;
 
+
+        // Tooltip configurations
+        const tooltip = div.append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("visibility", "hidden")
+            .style("color", "white")
+            .style("padding", "8px")
+            .style("background-color", "#626D71")
+            .style("border-radius", "6px")
+            .style("text-align", "center")
+            .style("font-family", "monospace")
+            //.style("width", "400px")
+            .style("font-size", "12px")
+            .style("stroke", "transparent")
+            .text("");
+
+        const mouseover = (event, d) => {
+            const [x, y] = d3.pointer(event, document.body);
+            tooltip.html(d[columnForX] + "<br/>" + numberWithCommas(d[columnForY]));
+            tooltip.style("top", (y + 0) + "px").style("left", (x + 50) + "px");
+            return tooltip.style("visibility", "visible");
+        };
+
+        const mouseout = (event, d) => {
+            return tooltip.style("visibility", "hidden");
+        };
+
+        // Scaler functions
         const xScale = d3.scaleTime()
-            .domain([d3.min(data, function (d) { return +d[columnForX]; }),d3.max(data, function (d) { return +d[columnForX]; })])
+            .domain([d3.min(data, function (d) { return +d[columnForX]; }), d3.max(data, function (d) { return +d[columnForX]; })])
             .range([0, graphWidth]);
         const yScale = d3.scaleLinear()
             .domain([0, d3.max(data, function (d) { return +d[columnForY]; })])
@@ -40,11 +72,6 @@ function buildLine() {
         const lineFun = d3.line()
             .x(d => xScale(d[columnForX]))
             .y(d => yScale(d[columnForY]));
-
-        var div = selection,
-            svg = div.append('svg');
-        svg.attr('width', width).attr('height', height);
-        //.attr("id", "svg-overview");
 
         const graph = svg.append("g")
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -65,21 +92,7 @@ function buildLine() {
             .attr("stroke-width", 1.5)
             .attr("d", lineFun);
 
-        //const tooltip = d3.select("body")
-        const tooltip = svg.append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
 
-        const mouseover = (event, d) => {
-            tooltip.style("opacity", 1);
-            tooltip.html("Year: " + d[columnForX] + "<br>Value: " + d[columnForY])
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-        };
-
-        const mouseout = (event, d) => {
-            tooltip.style("opacity", 0);
-        };
 
         if (showDots) {
             graph.selectAll("circle")
