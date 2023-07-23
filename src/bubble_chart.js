@@ -22,7 +22,6 @@ function buildBubble() {
             svg = div.append('svg');
             svg.attr('width', width)
                 .attr('height', height);
-
         } else {
             svg.selectAll("*")
                 .remove();
@@ -40,7 +39,6 @@ function buildBubble() {
             .style("border-radius", "6px")
             .style("text-align", "center")
             .style("font-family", "monospace")
-            //.style("width", "400px")
             .style("font-size", "12px")
             .style("stroke", "transparent")
             .text("");
@@ -126,6 +124,7 @@ function buildBubble() {
             node.call(drag);
         }
 
+        // Does not work - delete?
         if (showTitleOnCircle) {
             var textGroup = node.append("g")
                 .attr("clip-path", function (d, i) {
@@ -136,14 +135,10 @@ function buildBubble() {
                 .attr("text-anchor", "middle")
                 .style("pointer-events", "none")
                 .attr("dy", ".35em")
-                //.attr('transform', function(d){return 'translate(' + [d.x,d.y] + ')'})
-                .text(function (d) { return d[columnForTitle]; })
-                .on("mouseover", mouseover)
-                .on("mousemove", mousemove)
-                .on("mouseout", mouseout);
+                .attr('transform', function(d){return 'translate(' + [d.x,d.y] + ')'})
+                .text(function (d) { return d[columnForTitle]; });
         }
     }
-
 
     // Accesor
     chart.width = function (value) {

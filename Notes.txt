@@ -1,0 +1,8 @@
+Double check numbers
+increase and decrease buttons not working
+make the bubble chart loaded on load
+layout
+add a navbar
+By country charts - 5 charts per row
+
+

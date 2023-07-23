@@ -1,0 +1,16 @@
+.leftward,
+.rightward {
+    border-top: 7px solid #000000;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 7px solid transparent;
+    display: inline-block;
+}
+
+.leftward {
+    transform: translate(-30%, 0%) rotate(90deg);
+}
+
+.rightward {
+    transform: translate(30%, 0%) rotate(-90deg);
+}
