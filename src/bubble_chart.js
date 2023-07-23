@@ -12,6 +12,7 @@ function buildBubble() {
     var forceApart = -50;
     var framesToSimulate = 10;
     var showTitleOnCircle = true;
+    var isDraggable = false;
 
     function chart(selection) {
         var data = selection.datum();
@@ -52,11 +53,7 @@ function buildBubble() {
 
         const mousemove = (event, d) => {
             const [x, y] = d3.pointer(event, document.body);
-            console.log(svg.node());
-            console.log(x, y);
             return tooltip.style("top", (y + 0) + "px").style("left", (x + 100) + "px");
-            //return tooltip.style("y", (y + 0) + "px").style("x", (x + 100) + "px");
-            //return tooltip.style("left", (d3.mouse(this)[0]+70) + "px").style("top", (d3.mouse(this)[1]) + "px")
         };
 
         const mouseout = (event, d) => {
@@ -98,8 +95,35 @@ function buildBubble() {
 
         function ticked(e) {
             node.attr("transform", function (d) {
-                return "translate(" + [d.x, d.y] + ")";
+                //return "translate(" + [d.x, d.y] + ")";
+                return "translate(" + [d.fx || d.x, d.fy || d.y] + ")";
             });
+        }
+
+        // Drag behavior
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        if (isDraggable) {
+            var drag = d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended);
+
+            node.call(drag);
         }
 
         if (showTitleOnCircle) {
@@ -173,6 +197,12 @@ function buildBubble() {
     chart.framesToSimulate = function (value) {
         if (!arguments.length) { return framesToSimulate; }
         framesToSimulate = value;
+        return chart;
+    };
+
+    chart.isDraggable = function (value) {
+        if (!arguments.length) { return isDraggable; }
+        isDraggable = value;
         return chart;
     };
 

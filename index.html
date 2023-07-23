@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 <script src="http://d3js.org/d3.v7.js" charset="utf-8"></script>
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js" integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
 
 <head>
   <meta charset="utf-8">
@@ -14,7 +13,6 @@
   <script src="src/line_chart.js"></script>
   <script src="src/bubble_chart.js"></script>
   <link rel="stylesheet" href="css/line_chart.css">
-
 </head>
 
 <body>
@@ -25,6 +23,7 @@
     <h1>Overview</h1>
   </div>
   <div id="bubble_chart_overall">
+    <h1>Bubble chart</h1>
     <label for="yearSlider">Select Year:</label>
     <input type="range" min="2000" max="2022" step="1" value="2000" id="yearSlider" />
     <span id="selectedYear">2000</span>
@@ -49,7 +48,6 @@
       var data1 = data[0]; //medium_january.csv
       var data2 = data[1]; //AnnualArrivals.csv
 
-
       function updateBubbleChart(selectedYear) {
         selectedYear = parseInt(selectedYear);
         var bubbleChartSvg = d3.select('#bubble_chart_overall');
@@ -62,19 +60,20 @@
           .maxRadius(50)
           .columnForColors("Region")
           .columnForTitle("Country")
-          .columnForRadius("Value");
+          .columnForRadius("Value")
+          .isDraggable(true);
         bubbleChartSvg.datum(filteredData).call(chart);
       }
 
-      // スライドバーのDOM要素を取得
+      // Get DOM for the slide bar
       var yearSlider = document.getElementById("yearSlider");
       var selectedYearText = document.getElementById("selectedYear");
 
-      // スライドバーの値が変更されたときのイベントハンドラ
+      // Event handler for the slide bar
       yearSlider.addEventListener("input", function () {
-        // スライドバーの値を取得
+        // Get the value of the slide bar
         var selectedYear = +yearSlider.value;
-        // 選択された年を表示
+        // Show the selected year
         selectedYearText.textContent = selectedYear;
         updateBubbleChart(selectedYear);
       });
@@ -82,14 +81,13 @@
 
 
       var arrivalsByYearRegionCountry = data2.filter(d => (!excludedCountry.includes(d.Country) && d.Year == '2000'));
-      //console.log(arrivalsByYearRegionCountry)
-
+      
       var arrivalsByYear = d3.rollup(
         data2.filter(d => (!excludedCountry.includes(d.Country))),
         v => d3.sum(v, d => d.Value),
         d => d.Year
       );
-      //arrayArrivalsByYear = Array.from(arrivalsByYear.entries());
+
       var arrayArrivalsByYear = Array.from(arrivalsByYear.entries()).map(([year, value]) => ({
         year: year,
         travelers: value
@@ -97,7 +95,6 @@
 
       var chart = buildLine().xAxisLabel("Year").yAxisLabel("Travelers");
       d3.select("#line_chart_overall").datum(arrayArrivalsByYear).call(chart);
-      //buildLine(d3.select("#line_chart_overall"))(arrayArrivalsByYear);
 
       //buildLine(arrayArrivalsByYear).xAxisLabel("Year").yAxisLabel("Travelers")("#line_chart_overall");
 
