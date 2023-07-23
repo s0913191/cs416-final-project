@@ -14,3 +14,33 @@
 .rightward {
     transform: translate(30%, 0%) rotate(-90deg);
 }
+
+.page-title {
+    font-family: sans-serif;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+#line-chart-country {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 columns with equal width */
+    grid-gap: 10px;
+    /* Spacing between grid items */
+    max-width: 1500px;
+    /* Adjust the maximum width as needed */
+}
+
+.chart-area {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Exclude h1 element from the grid layout */
+#line-chart-country h1 {
+    grid-column: 1 / span 5;
+    /* Set the h1 element to span across 5 columns */
+}

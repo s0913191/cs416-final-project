@@ -18,22 +18,29 @@
 
 <body>
   <h1>test</h1>
-  <div id="my_dataviz"></div>
-  <div class="chart-example" id="chart" style="position: relative;"></div>
-  <div id="line_chart_overall">
+  <div class="page-title">
+    <span class="page-title-item">
+      International Visitor Arrivals to the United States
+    </span>
+  </div>
+
+
+  <div id="line-chart-overall" class="chart-area">
     <h1>Overview</h1>
   </div>
-  <div id="bubble_chart_overall">
+
+  <div id="bubble-chart-overall" class="chart-area">
     <h1>Bubble chart</h1>
+    <br>
     <label for="yearSlider">Select Year:</label>
     <button type="button" onclick="decreaseYear();"><span class="leftward"></span></button>
     <input type="range" min="2000" max="2022" step="1" value="2000" id="yearSlider" />
     <button type="button" onclick="increaseYear();"><span class="rightward"></span></button>
     <span id="displayYearSlider"></span>
-
     <span id="selectedYear">2000</span>
   </div>
-  <div id="line_chart_country">
+
+  <div id="line-chart-country" class="chart-area">
     <h1>By Country</h1>
   </div>
   <script>
@@ -54,7 +61,7 @@
 
       function updateBubbleChart(selectedYear) {
         selectedYear = parseInt(selectedYear);
-        var bubbleChartSvg = d3.select('#bubble_chart_overall');
+        var bubbleChartSvg = d3.select('#bubble-chart-overall');
         // Update the chart
         var filteredData = data2.filter(d => (!excludedCountry.includes(d.Country) && parseInt(d.Year) == selectedYear));
         var chart = buildBubble()
@@ -96,8 +103,6 @@
         updateBubbleChart(selectedYear);
       });
 
-
-
       var arrivalsByYearRegionCountry = data2.filter(d => (!excludedCountry.includes(d.Country) && d.Year == '2000'));
 
       var arrivalsByYear = d3.rollup(
@@ -112,7 +117,7 @@
       }));
 
       var chart = buildLine().xAxisLabel("Year").yAxisLabel("Travelers");
-      d3.select("#line_chart_overall").datum(arrayArrivalsByYear).call(chart);
+      d3.select("#line-chart-overall").datum(arrayArrivalsByYear).call(chart);
 
       // By country
       topCountry.forEach(function (e, i) {
@@ -126,16 +131,50 @@
           travelers: value
         }));
 
-        var chart = buildLine().width(300).height(150).showDots(false).chartTitle(e).xShowAxisLabel(false).yShowAxisLabel(false);
-        d3.select("#line_chart_country").datum(arrayArrivalsByYear).call(chart);
+
+        // Calculate the row and column for each element in the grid
+        var row = Math.floor(i / 5);
+        var col = i % 5;
+
+        // Create a unique ID for each chart element
+        var chartId = "line-chart-" + formatId(e);
+
+        // Create a new <div> element for the chart
+        var chartDiv = document.createElement("div");
+        chartDiv.id = chartId;
+        chartDiv.className = "chart-area";
+
+        // Append the new <div> to the line-chart country <div>
+        document.getElementById("line-chart-country").appendChild(chartDiv);
+
+
+        var chart = buildLine()
+          .width(300)
+          .height(150)
+          .showDots(false)
+          .chartTitle(e)
+          .xShowAxisLabel(false)
+          .yShowAxisLabel(false);
+
+        d3.select("#" + chartId)
+          .datum(arrayArrivalsByYear)
+          .call(chart);
       });
 
 
       //var chart = buildBubble().width(600).height(400);
       //d3.select('#chart').datum(data1).call(chart);
 
-      //var chart = buildBubble().width(600).height(400).minRadius(5).maxRadius(50).columnForColors("Region").columnForTitle("Country").columnForRadius("Value");
-      //var bubbleChartSvg = d3.select('#bubble_chart_overall').datum(arrivalsByYearRegionCountry).call(chart);
+      var chart = buildBubble()
+        .width(600)
+        .height(400)
+        .minRadius(5)
+        .maxRadius(50)
+        .columnForColors("Region")
+        .columnForTitle("Country")
+        .columnForRadius("Value")
+        .isDraggable(true);
+      var bubbleChartSvg = d3.select('#bubble-chart-overall').datum(arrivalsByYearRegionCountry).call(chart);
 
     });
 
