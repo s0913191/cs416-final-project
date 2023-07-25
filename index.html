@@ -1,6 +1,9 @@
 <!doctype html>
 <html>
 <script src="http://d3js.org/d3.v7.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"
+  integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <head>
   <meta charset="utf-8">
@@ -12,6 +15,7 @@
   <script src="src/util.js"></script>
   <script src="src/line_chart.js"></script>
   <script src="src/bubble_chart.js"></script>
+  <script src="src/annotation.js"></script>
   <link rel="stylesheet" href="css/line_chart.css">
   <link rel="stylesheet" href="css/main.css">
 </head>
@@ -31,11 +35,12 @@
 
   <div id="bubble-chart-overall" class="chart-area">
     <h1>Bubble chart</h1>
+    <svg width="600" height="400"></svg>
     <br>
     <label for="yearSlider">Select Year:</label>
-    <button type="button" onclick="decreaseYear();"><span class="leftward"></span></button>
+    <!-- <button type="button" onclick="decreaseYear();"><span class="leftward"></span></button> -->
     <input type="range" min="2000" max="2022" step="1" value="2000" id="yearSlider" />
-    <button type="button" onclick="increaseYear();"><span class="rightward"></span></button>
+    <!-- <button type="button" onclick="increaseYear();"><span class="rightward"></span></button> -->
     <span id="displayYearSlider"></span>
     <span id="selectedYear">2000</span>
   </div>
@@ -53,6 +58,36 @@
     // Create promises to load data
     var dataPromise1 = d3.csv("medium_january.csv");
     var dataPromise2 = d3.csv("AnnualArrivals.csv");
+
+    // Get DOM for the slide bar
+    var yearSlider = document.getElementById("yearSlider");
+    var selectedYearText = document.getElementById("selectedYear");
+
+    function displaySlider() {
+      document.getElementById("displayYearSlider").innerHTML = document.getElementById("yearSlider").value;
+    }
+
+    function updateSlider(value) {
+      document.getElementById("yearSlider").value = value;
+      displaySlider();
+    }
+
+    function decreaseYear() {
+      var sliderValue = Number(document.getElementById("yearSlider").value);
+      var minValue = Number(document.getElementById("yearSlider").min);
+      if (sliderValue > minValue) {
+        updateSlider(sliderValue - 1);
+      }
+    }
+
+    function increaseYear() {
+      var sliderValue = Number(document.getElementById("yearSlider").value);
+      var maxValue = Number(document.getElementById("yearSlider").max);
+      if (sliderValue < maxValue) {
+        updateSlider(sliderValue + 1);
+      }
+    }
+
 
     // Load data parallelly using Promise.all
     Promise.all([dataPromise1, dataPromise2]).then(function (data) {
@@ -74,24 +109,6 @@
           .columnForRadius("Value")
           .isDraggable(true);
         bubbleChartSvg.datum(filteredData).call(chart);
-      }
-
-      // Get DOM for the slide bar
-      var yearSlider = document.getElementById("yearSlider");
-      var selectedYearText = document.getElementById("selectedYear");
-
-      function displaySlider() {
-        document.getElementById("displayYearSlider").innerHTML = document.getElementById("yearSlider").value;
-      }
-
-      function decreaseYear() {
-        document.getElementById("yearSlider").value = Number(document.getElementById("yearSlider").value) - 1;
-        displaySlider();
-      }
-
-      function increaseYear() {
-        document.getElementById("yearSlider").value = Number(document.getElementById("yearSlider").value) + 1;
-        displaySlider();
       }
 
       // Event handler for the slide bar
@@ -118,6 +135,13 @@
 
       var chart = buildLine().xAxisLabel("Year").yAxisLabel("Travelers");
       d3.select("#line-chart-overall").datum(arrayArrivalsByYear).call(chart);
+
+      d3.select("#line-chart-overall")
+        .select("svg")
+        .append("g")
+        .attr("class", "annotation-group")
+        .call(makeAnnotations);
+
 
       // By country
       topCountry.forEach(function (e, i) {

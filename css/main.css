@@ -44,3 +44,15 @@
     grid-column: 1 / span 5;
     /* Set the h1 element to span across 5 columns */
 }
+
+
+#bubble-chart-overall {
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+}
+
+#bubble-chart-overall input[type="range"] {
+    width: 80%;
+}
