@@ -6,26 +6,39 @@ function buildBubble() {
     var height = 500;
     var minRadius = 6;
     var maxRadius = 20;
+    var chartTitle = "Chart Title";
     var columnForColors = "category";
     var columnForTitle = "title";
     var columnForRadius = "views";
     var forceApart = -50;
     var framesToSimulate = 10;
+    var replaceSvg = true;
     var showTitleOnCircle = true;
     var isDraggable = false;
+    var showChartTitle = true;
 
     function chart(selection) {
         var data = selection.datum();
         var div = selection;
         var svg = div.select('svg');
-        if (svg.empty()) {
+
+        if (replaceSvg) {
+            if (svg.empty()) {
+                svg = div.append('svg');
+                svg.attr('width', width)
+                    .attr('height', height);
+            } else {
+                //console.log(svg.selectAll("*"));
+                svg.selectAll("*")
+                    .remove();
+            }
+
+        } else {
             svg = div.append('svg');
             svg.attr('width', width)
                 .attr('height', height);
-        } else {
-            svg.selectAll("*")
-                .remove();
         }
+
 
 
         // Tooltip configurations
@@ -135,12 +148,22 @@ function buildBubble() {
                 .attr("text-anchor", "middle")
                 .style("pointer-events", "none")
                 .attr("dy", ".35em")
-                .attr('transform', function(d){return 'translate(' + [d.x,d.y] + ')'})
+                .attr('transform', function (d) { return 'translate(' + [d.x, d.y] + ')' })
                 .text(function (d) { return d[columnForTitle]; });
+        }
+
+        if (showChartTitle) {
+            svg.append("g")
+                .attr("class", "chart-title")
+                .append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", width / 2)
+                .attr("y", 20)
+                .text(chartTitle);
         }
     }
 
-    // Accesor
+    // Accesors
     chart.width = function (value) {
         if (!arguments.length) { return width; }
         width = value;
@@ -150,6 +173,12 @@ function buildBubble() {
     chart.height = function (value) {
         if (!arguments.length) { return height; }
         height = value;
+        return chart;
+    };
+
+    chart.chartTitle = function (value) {
+        if (!arguments.length) { return chartTitle; }
+        chartTitle = value;
         return chart;
     };
 
@@ -200,6 +229,19 @@ function buildBubble() {
         isDraggable = value;
         return chart;
     };
+
+    chart.replaceSvg = function (value) {
+        if (!arguments.length) { return replaceSvg; }
+        replaceSvg = value;
+        return chart;
+    };
+
+    chart.showChartTitle = function (value) {
+        if (!arguments.length) { return showChartTitle; }
+        showChartTitle = value;
+        return chart;
+    };
+
 
     return chart;
 }

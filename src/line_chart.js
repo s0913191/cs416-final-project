@@ -195,5 +195,19 @@ function buildLine() {
         return chart;
     };
 
+
+    chart.xAxisTicks = function (value) {
+        if (!arguments.length) { return xAxisTicks; }
+        xAxisTicks = value;
+        return chart;
+    };
+
+
+    chart.yAxisTicks = function (value) {
+        if (!arguments.length) { return yAxisTicks; }
+        yAxisTicks = value;
+        return chart;
+    };
+
     return chart;
 }
