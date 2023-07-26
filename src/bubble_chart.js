@@ -71,6 +71,10 @@ function buildBubble() {
             return tooltip.style("visibility", "hidden");
         };
 
+        const click = (event, d) => {
+            console.log(d.Country);
+        };
+
         // Scaler functions
         var scaleRadius = d3.scaleLinear()
             .domain([d3.min(data, function (d) { return +d[columnForRadius]; }), d3.max(data, function (d) { return +d[columnForRadius]; })])
@@ -88,7 +92,8 @@ function buildBubble() {
             .attr('transform', 'translate(' + [width / 2, height / 2] + ')')
             .on("mouseover", mouseover)
             .on("mousemove", mousemove)
-            .on("mouseout", mouseout);
+            .on("mouseout", mouseout)
+            .on("click", click);
 
         node.append("clipPath")
             .attr("id", function (d, i) { return "clip-" + i; })
