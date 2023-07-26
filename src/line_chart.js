@@ -16,13 +16,30 @@ function buildLine() {
     var xShowAxisLabel = true;
     var yShowAxisLabel = true;
     var chartTitle = "Chart Title";
+    var replaceSvg = true;
     var showChartTitle = true;
 
     function chart(selection) {
         var data = selection.datum();
         var div = selection;
-        var svg = div.append('svg');
-        svg.attr('width', width).attr('height', height);
+        var svg = div.select('svg');
+
+        if (replaceSvg) {
+            if (svg.empty()) {
+                svg = div.append('svg');
+                svg.attr('width', width)
+                    .attr('height', height);
+            } else {
+                //console.log(svg.selectAll("*"));
+                svg.selectAll("*")
+                    .remove();
+            }
+
+        } else {
+            svg = div.append('svg');
+            svg.attr('width', width)
+                .attr('height', height);
+        }
 
         const margin = { top: 20, right: 20, bottom: 30, left: 100 };
         const graphWidth = width - margin.left - margin.right;
@@ -63,6 +80,8 @@ function buildLine() {
         const yScale = d3.scaleLinear()
             .domain([0, d3.max(data, function (d) { return +d[columnForY]; })])
             .range([graphHeight, 0]);
+
+        console.log(xScale(2001), yScale(27990385));
 
         const xAxisGen = d3.axisBottom(xScale)
             .tickFormat(d3.format("d"))
@@ -186,6 +205,12 @@ function buildLine() {
     chart.showChartTitle = function (value) {
         if (!arguments.length) { return showChartTitle; }
         showChartTitle = value;
+        return chart;
+    };
+
+    chart.replaceSvg = function (value) {
+        if (!arguments.length) { return replaceSvg; }
+        replaceSvg = value;
         return chart;
     };
 

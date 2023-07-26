@@ -1,4 +1,4 @@
-function buildBubble() {
+function buildBubble(onDotClick) {
     // data is going to be an array d[N][3]
 
     // Default parameters
@@ -72,7 +72,10 @@ function buildBubble() {
         };
 
         const click = (event, d) => {
-            console.log(d.Country);
+            //console.log(d.Country);
+            if(onDotClick) {
+                onDotClick(d);
+            }
         };
 
         // Scaler functions
