@@ -6,3 +6,5 @@ add a navbar
 By country charts - 5 charts per row
 Add annotation to highlight some global events
 Fix/add chart title
+Tooltip keeps getting added when slider is moved
+Trigger - click bubble chart?
