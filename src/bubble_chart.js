@@ -28,7 +28,6 @@ function buildBubble(onDotClick) {
                 svg.attr('width', width)
                     .attr('height', height);
             } else {
-                //console.log(svg.selectAll("*"));
                 svg.selectAll("*")
                     .remove();
             }
@@ -72,7 +71,6 @@ function buildBubble(onDotClick) {
         };
 
         const click = (event, d) => {
-            //console.log(d.Country);
             if(onDotClick) {
                 onDotClick(d);
             }

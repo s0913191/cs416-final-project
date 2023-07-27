@@ -30,7 +30,6 @@ function buildLine() {
                 svg.attr('width', width)
                     .attr('height', height);
             } else {
-                //console.log(svg.selectAll("*"));
                 svg.selectAll("*")
                     .remove();
             }
@@ -80,8 +79,6 @@ function buildLine() {
         const yScale = d3.scaleLinear()
             .domain([0, d3.max(data, function (d) { return +d[columnForY]; })])
             .range([graphHeight, 0]);
-
-        console.log(xScale(2001), yScale(27990385));
 
         const xAxisGen = d3.axisBottom(xScale)
             .tickFormat(d3.format("d"))
