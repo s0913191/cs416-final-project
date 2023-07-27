@@ -30,8 +30,8 @@ const annotations = [
             wrap: 300
         },
         data: { year: 2009, travelers: 31357892 },
-        dy: 100,
-        dx: 100
+        dy: 50,
+        dx: 50
     }, {
         note: {
             label: "Trump & Brexit",

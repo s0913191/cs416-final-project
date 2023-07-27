@@ -144,7 +144,7 @@
 
 
     // Create promises to load data
-    var dataPromise1 = d3.csv("medium_january.csv");
+    //var dataPromise1 = d3.csv("medium_january.csv");
     var dataPromise2 = d3.csv("AnnualArrivals.csv");
 
     // Get DOM for the slide bar
@@ -161,9 +161,9 @@
     }
 
     // Load data parallelly using Promise.all
-    Promise.all([dataPromise1, dataPromise2]).then(function (data) {
-      var data1 = data[0]; //medium_january.csv
-      var data2 = data[1]; //AnnualArrivals.csv
+    Promise.all([dataPromise2]).then(function (data) {
+      //var data1 = data[0]; //medium_january.csv
+      var data2 = data[0]; //AnnualArrivals.csv
 
       function onDotClick(data) {
         //console.log("Bubble is clicked!", data.Country);
