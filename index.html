@@ -182,6 +182,7 @@
           .height(400)
           .showDots(true)
           .xAxisTicks(10)
+          .yAxisTicks(5)
           .chartTitle(data.Country)
           .xShowAxisLabel(false)
           .yShowAxisLabel(false);
@@ -238,14 +239,15 @@
         .yAxisLabel("Travelers")
         .xAxisTicks(22)
         .yAxisTicks(5);
-      d3.select("#line-chart-overall").datum(arrayArrivalsByYear).call(chart);
+      d3.select("#line-chart-overall")
+        .datum(arrayArrivalsByYear)
+        .call(chart);
 
       d3.select("#line-chart-overall")
         .select("svg")
         .append("g")
         .attr("class", "annotation-group")
         .call(makeAnnotations);
-
 
       // By country
       topCountry.forEach(function (e, i) {
@@ -334,18 +336,18 @@
 
     // Initialize #line-chart-country-interactive
     var chart = buildLine()
-          .width(600)
-          .height(400)
-          .showDots(true)
-          .xAxisTicks(10)
-          .yAxisTicks(5)
-          .chartTitle("Chart Area")
-          .xShowAxisLabel(false)
-          .yShowAxisLabel(false);
+      .width(600)
+      .height(400)
+      .showDots(true)
+      .xAxisTicks(10)
+      .yAxisTicks(5)
+      .chartTitle("Chart Area")
+      .xShowAxisLabel(false)
+      .yShowAxisLabel(false);
 
-        d3.select("#line-chart-country-interactive")
-          .datum([])
-          .call(chart);
+    d3.select("#line-chart-country-interactive")
+      .datum([])
+      .call(chart);
 
   </script>
 </body>

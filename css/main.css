@@ -66,6 +66,9 @@
     /* Set the h1 element to span across 5 columns */
 }
 
+.annotation-group{
+    font-family: sans-serif;
+}
 
 #bubble-chart-static {
     display: grid;
