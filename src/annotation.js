@@ -9,7 +9,7 @@ const annotations = [
         note: {
             label: "Terrorist Attacks",
             title: "2001",
-            wrap:300
+            wrap: 300
         },
         data: { year: 2001, travelers: 27990385 },
         dy: 100,
@@ -18,16 +18,25 @@ const annotations = [
         note: {
             label: "Global Financial Crisis",
             title: "2008",
-            wrap:300
+            wrap: 300
         },
         data: { year: 2008, travelers: 33390025 },
         dy: -50,
         dx: -50
     }, {
         note: {
+            label: "European Debt Crisis",
+            title: "2009",
+            wrap: 300
+        },
+        data: { year: 2009, travelers: 31357892 },
+        dy: 100,
+        dx: 100
+    }, {
+        note: {
             label: "Trump & Brexit",
             title: "2016",
-            wrap:300
+            wrap: 300
         },
         data: { year: 2016, travelers: 48524355 },
         dy: 100,
@@ -36,7 +45,7 @@ const annotations = [
         note: {
             label: "COVID-19",
             title: "2020",
-            wrap:300
+            wrap: 300
         },
         data: { year: 2020, travelers: 11257292 },
         dy: 50,
